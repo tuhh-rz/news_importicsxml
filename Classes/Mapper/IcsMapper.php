@@ -82,6 +82,9 @@ class IcsMapper extends AbstractMapper implements MapperInterface
                         'SEQUENCE' => $event['SEQUENCE'],
                         'STATUS' => $event['STATUS'],
                         'TRANSP' => $event['TRANSP'],
+                        'URL' => $event['URL'],
+                        'ATTACH' => $event['ATTACH'],
+                        'SUMMARY' => $event['SUMMARY'],
                     ]
                 ],
             ];
