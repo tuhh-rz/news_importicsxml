@@ -70,7 +70,7 @@ class XmlMapper extends AbstractMapper implements MapperInterface
                         'feed' => $configuration->getPath(),
                         'url' => $item->getUrl(),
                         'guid' => $item->getTag('guid'),
-                    ]
+                    ],
                 ],
             ];
             $this->addRemoteFiles($singleItem, $item->xml, $id);
@@ -100,10 +100,10 @@ class XmlMapper extends AbstractMapper implements MapperInterface
         foreach ($xml->enclosure as $enclosure) {
             $url = (string)$enclosure->attributes()['url'];
             $mimeType = (string)$enclosure->attributes()['type'];
-
             if (!empty($url) && isset($extensions[$mimeType])) {
+                $fileInfo = pathinfo($url);
                 GeneralUtility::mkdir_deep(Environment::getPublicPath() . '/uploads/tx_newsimporticsxml/');
-                $file = 'uploads/tx_newsimporticsxml/' . $id . '_' . md5($url) . '.' . $extensions[$mimeType];
+                $file = 'uploads/tx_newsimporticsxml/' . rawurldecode($fileInfo['basename']) . '_' . substr(md5($url), 0, 10) . '.' . $extensions[$mimeType];
                 if (is_file(Environment::getPublicPath() . '/' . $file)) {
                     $status = true;
                 } else {
@@ -115,11 +115,11 @@ class XmlMapper extends AbstractMapper implements MapperInterface
                     if (in_array($extensions[$mimeType], ['gif', 'jpeg', 'jpg', 'png'], true)) {
                         $singleItem['media'][] = [
                             'image' => $file,
-                            'showinpreview' => true
+                            'showinpreview' => true,
                         ];
                     } else {
                         $singleItem['related_files'][] = [
-                            'file' => $file
+                            'file' => $file,
                         ];
                     }
                 }
