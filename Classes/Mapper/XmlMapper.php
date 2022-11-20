@@ -101,10 +101,11 @@ class XmlMapper extends AbstractMapper implements MapperInterface
             $url = (string)$enclosure->attributes()['url'];
             $mimeType = (string)$enclosure->attributes()['type'];
             if (!empty($url) && isset($extensions[$mimeType])) {
-                $fileInfo = pathinfo($url);
-                $path = '/uploads/tx_newsimporticsxml/' . substr(md5($xmlPath), 0, 10) . '/';
+                $urlInfo = parse_url($url);
+                $fileInfo = pathinfo($urlInfo['path']);
+                $path = '/uploads/tx_newsimporticsxml/' . substr(md5($xmlPath), 0, 10) . $fileInfo['dirname'] . '/';
                 GeneralUtility::mkdir_deep(Environment::getPublicPath() . $path);
-                $file = $path . rawurldecode($fileInfo['basename']) . '.' . $extensions[$mimeType];
+                $file = $path . rawurldecode($fileInfo['basename']);
                 if (is_file(Environment::getPublicPath() . '/' . $file)) {
                     $status = true;
                 } else {
