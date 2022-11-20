@@ -73,7 +73,7 @@ class XmlMapper extends AbstractMapper implements MapperInterface
                     ],
                 ],
             ];
-            $this->addRemoteFiles($singleItem, $item->xml, $id);
+            $this->addRemoteFiles($singleItem, $item->xml, $configuration->getPath());
             if ($configuration->isPersistAsExternalUrl()) {
                 $singleItem['type'] = 2;
                 $singleItem['externalurl'] = $item->getUrl();
@@ -87,7 +87,7 @@ class XmlMapper extends AbstractMapper implements MapperInterface
         return $data;
     }
 
-    protected function addRemoteFiles(array &$singleItem, \SimpleXMLElement $xml, string $id)
+    protected function addRemoteFiles(array &$singleItem, \SimpleXMLElement $xml, string $xmlPath)
     {
         $extensions = [
             'image/jpg' => 'jpg',
@@ -102,8 +102,9 @@ class XmlMapper extends AbstractMapper implements MapperInterface
             $mimeType = (string)$enclosure->attributes()['type'];
             if (!empty($url) && isset($extensions[$mimeType])) {
                 $fileInfo = pathinfo($url);
-                GeneralUtility::mkdir_deep(Environment::getPublicPath() . '/uploads/tx_newsimporticsxml/');
-                $file = 'uploads/tx_newsimporticsxml/' . rawurldecode($fileInfo['basename']) . '_' . substr(md5($url), 0, 10) . '.' . $extensions[$mimeType];
+                $path = '/uploads/tx_newsimporticsxml/' . substr(md5($xmlPath), 0, 10) . '/';
+                GeneralUtility::mkdir_deep(Environment::getPublicPath() . $path);
+                $file = $path . rawurldecode($fileInfo['basename']) . '.' . $extensions[$mimeType];
                 if (is_file(Environment::getPublicPath() . '/' . $file)) {
                     $status = true;
                 } else {
