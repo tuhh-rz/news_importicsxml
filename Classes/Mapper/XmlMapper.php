@@ -97,13 +97,17 @@ class XmlMapper extends AbstractMapper implements MapperInterface
             'application/pdf' => 'pdf',
         ];
 
+        $targetPath = trim($this->extensionConfiguration['importPath'] ?? '', '/');
+        $targetPath = $targetPath ?: 'uploads/tx_newsimporticsxml';
+        $targetPath = '/' . $targetPath . '/';
+
         foreach ($xml->enclosure as $enclosure) {
             $url = (string)$enclosure->attributes()['url'];
             $mimeType = (string)$enclosure->attributes()['type'];
             if (!empty($url) && isset($extensions[$mimeType])) {
                 $urlInfo = parse_url($url);
                 $fileInfo = pathinfo($urlInfo['path']);
-                $path = '/uploads/tx_newsimporticsxml/' . substr(md5($xmlPath), 0, 10) . $fileInfo['dirname'] . '/';
+                $path = $targetPath . substr(md5($xmlPath), 0, 10) . $fileInfo['dirname'] . '/';
                 GeneralUtility::mkdir_deep(Environment::getPublicPath() . $path);
                 $file = $path . rawurldecode($fileInfo['basename']);
                 if (is_file(Environment::getPublicPath() . '/' . $file)) {

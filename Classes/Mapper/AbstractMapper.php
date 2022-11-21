@@ -10,6 +10,7 @@ namespace GeorgRinger\NewsImporticsxml\Mapper;
  * LICENSE.txt file that was distributed with this source code.
  */
 
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\DataHandling\Model\RecordStateFactory;
 use TYPO3\CMS\Core\DataHandling\SlugHelper;
@@ -26,11 +27,19 @@ class AbstractMapper
     /** @var SlugHelper */
     protected $slugHelper;
 
+    protected array $extensionConfiguration = [];
+
     public function __construct()
     {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
         $fieldConfig = $GLOBALS['TCA']['tx_news_domain_model_news']['columns']['path_segment']['config'];
         $this->slugHelper = GeneralUtility::makeInstance(SlugHelper::class, 'tx_news_domain_model_news', 'path_segment', $fieldConfig);
+
+        try {
+            $this->extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('news_importicsxml');
+        } catch (\Exception $e) {
+            // do nothing
+        }
     }
 
     protected function generateSlug(array $fullRecord, int $pid)
