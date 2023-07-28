@@ -90,7 +90,7 @@ class IcsMapper extends AbstractMapper implements MapperInterface
             ];
 
             if ($configuration->isSetSlug()) {
-                $singleItem['path_segment'] = $this->generateSlug($singleItem, $configuration->getPid());
+                $singleItem['generate_path_segment'] = true;
             }
             $data[] = $singleItem;
         }
@@ -147,7 +147,7 @@ class IcsMapper extends AbstractMapper implements MapperInterface
     protected function getFileContent(TaskConfiguration $configuration)
     {
         $path = $configuration->getPath();
-        if (GeneralUtility::isFirstPartOfStr($path, 'http://') || GeneralUtility::isFirstPartOfStr($path, 'https://')) {
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
             $content = $this->getContentOfFile($path);
 
             $temporaryCopyPath = Environment::getPublicPath() . '/typo3temp/' . md5($path . $GLOBALS['EXEC_TIME']);

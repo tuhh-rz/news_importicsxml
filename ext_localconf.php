@@ -1,7 +1,4 @@
 <?php
-if (!defined('TYPO3_MODE')) {
-    die('Access denied.');
-}
 
 call_user_func(
     static function ($extKey) {
@@ -20,8 +17,8 @@ call_user_func(
 
         $GLOBALS['TYPO3_CONF_VARS']['EXT']['news']['classes']['Domain/Model/News'][] = $extKey;
 
-        spl_autoload_register(function ($class) {
-            if (\TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($class, 'PicoFeed')) {
+        spl_autoload_register(static function ($class) {
+            if (str_starts_with($class, 'PicoFeed')) {
                 $path = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('news_importicsxml') . 'Resources/Private/Contrib/picoFeed/lib/' . str_replace('\\',
                         '/', $class) . '.php';
                 require_once($path);

@@ -8,13 +8,11 @@ $EM_CONF[$_EXTKEY] = [
     'author_email' => 'mail@ringer.it',
     'state' => 'beta',
     'clearCacheOnLoad' => true,
-    'author_company' => 'ringer.it',
-    'version' => '5.1.0',
+    'version' => '5.2.0',
     'constraints' =>
         [
             'depends' => [
-                'typo3' => '10.0.0-11.9.99',
-                'news' => '8.0.0-9.99.99'
+                'news' => '11.1.3-11.99.99'
             ],
             'conflicts' => [],
             'suggests' => [],

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace GeorgRinger\NewsImporticsxml\Command;
 
+use GeorgRinger\News\Domain\Service\NewsImportService;
 use GeorgRinger\NewsImporticsxml\Domain\Model\Dto\TaskConfiguration;
 use GeorgRinger\NewsImporticsxml\Jobs\ImportJob;
+use GeorgRinger\NewsImporticsxml\Mapper;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +16,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Log\Logger;
 use TYPO3\CMS\Core\Log\LogManager;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 class ImportCommand extends Command
 {
@@ -49,8 +50,12 @@ class ImportCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
 
-        $objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $importJob = $objectManager->get(ImportJob::class, $this->createConfiguration($input));
+        $xmlMapper = new Mapper\XmlMapper();
+        $icsMapper = new Mapper\IcsMapper();
+
+        $newsImportService = GeneralUtility::makeInstance(NewsImportService::class);
+        $importJob = new ImportJob($xmlMapper, $icsMapper, $newsImportService);
+        $importJob->setConfiguration($this->createConfiguration($input));
         $importJob->run();
 
         return 0;

@@ -58,16 +58,22 @@ class ImportJob
      * @param NewsImportService $newsImportService
      */
     public function __construct(
-        TaskConfiguration $configuration,
         XmlMapper $xmlMapper,
         IcsMapper $icsMapper,
         NewsImportService $newsImportService
     ) {
         $this->logger = GeneralUtility::makeInstance(LogManager::class)->getLogger(__CLASS__);
-        $this->configuration = $configuration;
         $this->xmlMapper = $xmlMapper;
         $this->icsMapper = $icsMapper;
         $this->newsImportService = $newsImportService;
+    }
+
+    /**
+     * @param TaskConfiguration $configuration
+     */
+    public function setConfiguration(TaskConfiguration $configuration): void
+    {
+        $this->configuration = $configuration;
     }
 
     /**

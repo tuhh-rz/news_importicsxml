@@ -79,7 +79,7 @@ class XmlMapper extends AbstractMapper implements MapperInterface
                 $singleItem['externalurl'] = $item->getUrl();
             }
             if ($configuration->isSetSlug()) {
-                $singleItem['path_segment'] = $this->generateSlug($singleItem, $configuration->getPid());
+                $singleItem['generate_path_segment'] = true;
             }
 
             $data[] = $singleItem;
