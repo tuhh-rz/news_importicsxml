@@ -8,13 +8,6 @@ call_user_func(
             'class' => \GeorgRinger\NewsImporticsxml\Hooks\Backend\Element\JsonElement::class
         ];
 
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\GeorgRinger\NewsImporticsxml\Tasks\ImportTask::class] = [
-            'extension' => $extKey,
-            'title' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang.xlf:task.name',
-            'description' => 'LLL:EXT:' . $extKey . '/Resources/Private/Language/locallang.xlf:task.description',
-            'additionalFields' => \GeorgRinger\NewsImporticsxml\Tasks\ImportTaskAdditionalFieldProvider::class
-        ];
-
         $GLOBALS['TYPO3_CONF_VARS']['EXT']['news']['classes']['Domain/Model/News'][] = $extKey;
 
         spl_autoload_register(static function ($class) {
