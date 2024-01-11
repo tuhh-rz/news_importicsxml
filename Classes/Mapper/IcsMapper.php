@@ -48,43 +48,43 @@ class IcsMapper extends AbstractMapper implements MapperInterface
             } else {
                 $idCount[$id]++;
             }
-            $datetime = $iCalService->iCalDateToUnixTimestamp($event['DTSTART']);
+            $datetime = $iCalService->iCalDateToUnixTimestamp($event['DTSTART'] ?? $event['DTSTAMP']);
             if ($datetime === false) {
                 $datetime = $iCalService->iCalDateToUnixTimestamp($event['DTSTAMP']);
             }
 
             $singleItem = [
                 'import_source' => $this->getImportSource(),
-                'import_id' => $id . '-' . $idCount[$event['UID']],
+                'import_id' => $id . '-' . $idCount[$id],
                 'crdate' => $GLOBALS['EXEC_TIME'],
-                'cruser_id' => $GLOBALS['BE_USER']->user['uid'],
+                'cruser_id' => $GLOBALS['BE_USER'] ?? $GLOBALS['BE_USER']->user['uid'] ?? 0,
                 'type' => 0,
                 'hidden' => 0,
                 'pid' => $configuration->getPid(),
                 'title' => $this->cleanup((string)$event['SUMMARY']),
                 'bodytext' => $this->cleanup((string)$event['DESCRIPTION']),
                 'datetime' => $datetime,
-                'categories' => $this->getCategories((array)$event['CATEGORIES_array'], $configuration),
+                'categories' => $this->getCategories((array)($event['CATEGORIES_array'] ?? []), $configuration),
                 '_dynamicData' => [
                     'location' => $event['LOCATION'],
-                    'datetime_end' => $iCalService->iCalDateToUnixTimestamp($event['DTEND']),
+                    'datetime_end' => (isset($event['DTEND']) ? $iCalService->iCalDateToUnixTimestamp($event['DTEND']) : ''),
                     'reference' => $event,
                     'news_importicsxml' => [
                         'importDate' => date('d.m.Y h:i:s', $GLOBALS['EXEC_TIME']),
                         'feed' => $configuration->getPath(),
                         'UID' => $event['UID'],
-                        'VARIANT' => $idCount[$event['UID']],
+                        'VARIANT' => $idCount[$id],
                         'LOCATION' => $event['LOCATION'],
-                        'DTSTART' => $event['DTSTART'],
-                        'DTSTAMP' => $event['DTSTAMP'],
-                        'DTEND' => $event['DTEND'],
-                        'PRIORITY' => $event['PRIORITY'],
+                        'DTSTART' => $event['DTSTART'] ?? '',
+                        'DTSTAMP' => $event['DTSTAMP'] ?? '',
+                        'DTEND' => $event['DTEND'] ?? '',
+                        'PRIORITY' => $event['PRIORITY'] ?? '',
                         'SEQUENCE' => $event['SEQUENCE'],
-                        'STATUS' => $event['STATUS'],
-                        'TRANSP' => $event['TRANSP'],
-                        'URL' => $event['URL'],
-                        'ATTACH' => $event['ATTACH'],
-                        'SUMMARY' => $event['SUMMARY'],
+                        'STATUS' => $event['STATUS'] ?? '',
+                        'TRANSP' => $event['TRANSP'] ?? '',
+                        'URL' => $event['URL'] ?? '',
+                        'ATTACH' => $event['ATTACH'] ?? '',
+                        'SUMMARY' => $event['SUMMARY'] ?? '',
                     ]
                 ],
             ];
