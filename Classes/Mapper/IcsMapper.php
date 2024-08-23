@@ -115,11 +115,16 @@ class IcsMapper extends AbstractMapper implements MapperInterface
                 $this->logger->info('Categories found during import but no mapping assigned in the task!');
             } else {
                 $categoryMapping = $configuration->getMappingConfigured();
-                foreach ($categoryTitles as $title) {
-                    if (!isset($categoryMapping[$title])) {
-                        $this->logger->warning(sprintf('Category mapping is missing for category "%s"', $title));
-                    } else {
-                        $categoryIds[] = $categoryMapping[$title];
+
+                foreach ($categoryTitles as $rawTitle) {
+                    $splitTitle = GeneralUtility::trimExplode(',', $rawTitle, true, 0);
+
+                    foreach ($splitTitle as $title) {
+                        if (!isset($categoryMapping[$title])) {
+                            $this->logger->warning(sprintf('Category mapping is missing for category "%s"', $title));
+                        } else {
+                            $categoryIds[] = $categoryMapping[$title];
+                        }
                     }
                 }
             }
