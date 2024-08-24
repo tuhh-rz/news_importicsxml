@@ -96,7 +96,7 @@ class IcsMapper extends AbstractMapper implements MapperInterface
         }
 
         if ($this->pathIsModified) {
-            unlink($path);
+            $success = unlink($path);
         }
 
         return $data;
