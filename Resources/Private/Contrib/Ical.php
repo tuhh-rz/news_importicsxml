@@ -229,6 +229,9 @@ class Ical
         if ($date[1] <= 1970) {
             return false;
         }
+        // enforce UTC as ICAL dates must be in this TZ
+        date_default_timezone_set('UTC');
+		
         // Unix timestamps after 03:14:07 UTC 2038-01-19 might cause an overflow
         // if 32 bit integers are used.
         $timestamp = mktime((int)$date[4], (int)$date[5], (int)$date[6], (int)$date[2], (int)$date[3], (int)$date[1]);
