@@ -142,38 +142,20 @@ This extensions used the logging API of TYPO3 CMS. You can find some basic infor
 
 Extending the import
 --------------------
-If you need to import additional data from a feed or ics item or you need to modify the data, use an aspect of the extension *news*.
-Create a custom extension and adopt the code snippets to your needs:
+If you need to import additional data from a feed or ics item or you need to modify the data, use the Event Dispatching of the extension *news*.
+Most likely, you will need the NewsImportPostHydrateEvent EventListener.
 
-*ext_localconf.php*: ::
+.. tip::
 
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
-		'GeorgRinger\\News\\Domain\\Service\\NewsImportService',
-		'postHydrate',
-		'YourVendorName\\YourExtKey\\Aspect\\NewsImportAspect',
-		'postHydrate'
-	);
+   Check the documentation of the news extension for a full list of available events: `https://docs.typo3.org/p/georgringer/news/main/en-us/Reference/Events/Index.html` 
 
-*typo3conf/ext/yourextkey/Classes/Aspect/NewsImportAspect.php*: ::
+.. tip::
 
-	<?php
+   Since TYPO3 v10, event dispatching is based on PSR-14 standard. See the core API docs to learn more details: `https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Events/EventDispatcher/Index.html`
 
-	namespace YourVendorName\YourExtKey\Aspect;
+.. tip::
 
-	class NewsImportAspect {
+   An example on how to use the NewsImportPostHydrateEvent EventListener is available in `ext:eventnews` 
 
-		/**
-		 * @param array $importData
-		 * @param \GeorgRinger\News\Domain\Model\News $news
-		 */
-		public function postHydrate(array $importData, $news) {
-			if (is_array($importData['_dynamicData'])) {
-				// $importData['_dynamicData'] is filled with all data from the imported item
-				if (isset($importData['_dynamicData']['location'])) {
-					$news->setLocationSimple(trim($importData['_dynamicData']['location']));
-				}
-			}
-		}
-	}
 
 
