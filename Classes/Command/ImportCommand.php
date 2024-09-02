@@ -45,7 +45,7 @@ class ImportCommand extends Command
             ->setDescription('Import of ICS and XML (RSS) into EXT:news');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
