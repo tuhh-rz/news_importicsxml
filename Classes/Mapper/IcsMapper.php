@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace GeorgRinger\NewsImporticsxml\Mapper;
 
 use GeorgRinger\NewsImporticsxml\Domain\Model\Dto\TaskConfiguration;
-use ICal;
+use ICal\ICal;
 use RuntimeException;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -37,20 +37,21 @@ class IcsMapper extends AbstractMapper implements MapperInterface
 
         $idCount = [];
 
-        require_once(ExtensionManagementUtility::extPath('news_importicsxml') . 'Resources/Private/Contrib/Ical.php');
+        require_once(ExtensionManagementUtility::extPath('news_importicsxml') . 'Resources/Private/Contrib/ICal.php');
+	require_once(ExtensionManagementUtility::extPath('news_importicsxml') . 'Resources/Private/Contrib/Event.php');
         $iCalService = new ICal($path);
         $events = $iCalService->events();
 
         foreach ($events as $event) {
-            $id = strlen($event['UID']) < 90 ? $event['UID'] : md5($event['UID']);
+            $id = strlen($event->uid) < 90 ? $event->uid : md5($event>uid);
             if (!isset($idCount[$id])) {
                 $idCount[$id] = 1;
             } else {
                 $idCount[$id]++;
             }
-            $datetime = $iCalService->iCalDateToUnixTimestamp($event['DTSTART'] ?? $event['DTSTAMP']);
+            $datetime = $iCalService->iCalDateToUnixTimestamp($event->dtstart ?? $event->dtstamp);
             if ($datetime === false) {
-                $datetime = $iCalService->iCalDateToUnixTimestamp($event['DTSTAMP']);
+                $datetime = $iCalService->iCalDateToUnixTimestamp($event->dtstamp);
             }
 
             $singleItem = [
@@ -61,30 +62,31 @@ class IcsMapper extends AbstractMapper implements MapperInterface
                 'type' => 0,
                 'hidden' => 0,
                 'pid' => $configuration->getPid(),
-                'title' => $this->cleanup((string)$event['SUMMARY']),
-                'bodytext' => $this->cleanup((string)$event['DESCRIPTION']),
+                'title' => $this->cleanup((string)$event->summary),
+                'bodytext' => $this->cleanup((string)$event->description),
                 'datetime' => $datetime,
-                'categories' => $this->getCategories((array)($event['CATEGORIES_array'] ?? []), $configuration),
+                'archive' =>  (isset($event->dtend) ? $iCalService->iCalDateToUnixTimestamp($event->dtend)+86400 : ''),
+                'categories' => $this->getCategories((array)($event->categories_array ?? []), $configuration),
                 '_dynamicData' => [
-                    'location' => (isset($event['LOCATION']) ? $event['LOCATION'] : ''),
-                    'datetime_end' => (isset($event['DTEND']) ? $iCalService->iCalDateToUnixTimestamp($event['DTEND']) : ''),
+                    'location' => (isset($event->location) ? $event->location : ''),
+                    'datetime_end' => (isset($event->dtend) ? $iCalService->iCalDateToUnixTimestamp($event->dtend) : ''),
                     'reference' => $event,
                     'news_importicsxml' => [
                         'importDate' => date('d.m.Y h:i:s', $GLOBALS['EXEC_TIME']),
                         'feed' => $configuration->getPath(),
-                        'UID' => $event['UID'],
+                        'UID' => $event->uid,
                         'VARIANT' => $idCount[$id],
-                        'LOCATION' => (isset($event['LOCATION']) ? $event['LOCATION'] : ''),
-                        'DTSTART' => $event['DTSTART'] ?? '',
-                        'DTSTAMP' => $event['DTSTAMP'] ?? '',
-                        'DTEND' => $event['DTEND'] ?? '',
-                        'PRIORITY' => $event['PRIORITY'] ?? '',
-                        'SEQUENCE' => $event['SEQUENCE'],
-                        'STATUS' => $event['STATUS'] ?? '',
-                        'TRANSP' => $event['TRANSP'] ?? '',
-                        'URL' => $event['URL'] ?? '',
-                        'ATTACH' => $event['ATTACH'] ?? '',
-                        'SUMMARY' => $event['SUMMARY'] ?? '',
+                        'LOCATION' => (isset($event->location) ? $event->location : ''),
+                        'DTSTART' => $event->dtstart ?? '',
+                        'DTSTAMP' => $event->dtstamp ?? '',
+                        'DTEND' => $event->dtend ?? '',
+                        'PRIORITY' => $event->priority ?? '',
+                        'SEQUENCE' => $event->sequence,
+                        'STATUS' => $event->status ?? '',
+                        'TRANSP' => $event->transp ?? '',
+                        'URL' => $event->url ?? '',
+                        'ATTACH' => $event->attach ?? '',
+                        'SUMMARY' => $event->summary ?? '',
                     ]
                 ],
             ];
