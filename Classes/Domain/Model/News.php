@@ -12,7 +12,7 @@ class News extends \GeorgRinger\News\Domain\Model\News
 {
 
     /** @var string */
-    protected $newsImportData;
+    protected $newsImportData = '';
 
     /**
      * @return string
